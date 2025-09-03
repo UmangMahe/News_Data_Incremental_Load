@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload News Api to GCS
         run: |
-          gsutil cp fetch_news_api.py gs://us-central1-airflow-test-gc-af5e545d-bucket/data/api/fetch_news_api.py
+          gsutil cp fetch_news_api.py gs://us-central1-airflow-test-gc-af5e545d-bucket/dags/fetch_news_api.py
 
       - name: Upload Airflow DAG to Airflow Dev GCS
         run: |
