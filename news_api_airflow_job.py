@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta, date
-from fetch_news import fetch_news_data
+from fetch_news_api import fetch_news
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 from airflow.models import Variable
 
