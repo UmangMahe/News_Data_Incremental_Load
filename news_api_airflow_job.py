@@ -29,7 +29,7 @@ projects_bucket_name = Variable.get("gcs_bucket", default_var="snowflake_project
 
 fetch_news_data_task = PythonOperator(
     task_id='newsapi_data_to_gcs',
-    python_callable=fetch_news_data,
+    python_callable=fetch_news,
     op_kwargs={
         'api_key': api_key,
         'query': query,
