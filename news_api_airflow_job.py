@@ -25,7 +25,7 @@ dag = DAG(
 
 api_key = Variable.get("api_key")
 query = Variable.get("query", default_var="apple")
-projects_bucket_name = Variable.get("projects_bucket_name")
+projects_bucket_name = Variable.get("gcs_bucket", default_var="snowflake_projects_gds_test")
 
 fetch_news_data_task = PythonOperator(
     task_id='newsapi_data_to_gcs',

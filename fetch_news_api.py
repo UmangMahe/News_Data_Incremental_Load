@@ -60,7 +60,3 @@ def fetch_news(api_key, query, from_date, to_date, bucket_name, destination):
         os.remove(filename)
     else:
         print("Failed to fetch news articles")
-
-
-
-fetch_news("be551b59c86c46028393c4073bfbc424", "apple", str(date.today()-timedelta(days=1)), str(date.today()), 'snowflake_projects_gds_test', 'news_data_analysis/parquet_files')
