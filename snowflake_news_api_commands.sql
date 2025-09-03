@@ -26,4 +26,8 @@ show stages;
 
 list @gcs_raw_data_stage;
 
+select * from NEWS_API.PUBLIC.NEWS_API_DATA;
+select * from NEWS_API.PUBLIC.AUTHOR_ACTIVITY;
+select * from NEWS_API.PUBLIC.SUMMARY_NEWS;
+
 drop stage gcs_raw_data_stage;
