@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta, date
 from fetch_news_api import fetch_news
-from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator
 from airflow.models import Variable
 
 default_args = {
@@ -41,7 +41,7 @@ fetch_news_data_task = PythonOperator(
     dag=dag,
 )
 
-snowflake_create_table = SnowflakeOperator(
+snowflake_create_table = SQLExecuteQueryOperator(
     task_id="snowflake_create_table",
     sql="""CREATE TABLE IF NOT EXISTS news_api.PUBLIC.news_api_data USING TEMPLATE (
                 SELECT ARRAY_AGG(OBJECT_CONSTRUCT(*))
@@ -50,20 +50,22 @@ snowflake_create_table = SnowflakeOperator(
                     FILE_FORMAT => 'parquet_format'
                 ))
             )""",
-    snowflake_conn_id="snowflake_conn"
+    conn_id="snowflake_conn",
+    split_statements=True
 )
 
-snowflake_copy = SnowflakeOperator(
+snowflake_copy = SQLExecuteQueryOperator(
     task_id="snowflake_copy_from_stage",
     sql="""COPY INTO news_api.PUBLIC.news_api_data 
             FROM @news_api.PUBLIC.gcs_raw_data_stage
             MATCH_BY_COLUMN_NAME=CASE_INSENSITIVE 
             FILE_FORMAT = (FORMAT_NAME = 'parquet_format') 
             """,
-    snowflake_conn_id="snowflake_conn"
+    conn_id="snowflake_conn",
+    split_statements=True
 )
 
-news_summary_task = SnowflakeOperator(
+news_summary_task = SQLExecuteQueryOperator(
     task_id="create_or_replace_news_summary_tb",
     sql="""
         CREATE OR REPLACE TABLE news_api.PUBLIC.summary_news AS
@@ -76,10 +78,11 @@ news_summary_task = SnowflakeOperator(
         GROUP BY "source"
         ORDER BY article_count DESC;
     """,
-    snowflake_conn_id="snowflake_conn"
+    conn_id="snowflake_conn",
+    split_statements=True
 )
 
-author_activity_task = SnowflakeOperator(
+author_activity_task = SQLExecuteQueryOperator(
     task_id="create_or_replace_author_activity_tb",
     sql="""
         CREATE OR REPLACE TABLE news_api.PUBLIC.author_activity AS
@@ -93,7 +96,8 @@ author_activity_task = SnowflakeOperator(
         GROUP BY "author"
         ORDER BY article_count DESC;
     """,
-    snowflake_conn_id="snowflake_conn"
+    conn_id="snowflake_conn",
+    split_statements=True
 )
 
 fetch_news_data_task >> snowflake_create_table >> snowflake_copy
